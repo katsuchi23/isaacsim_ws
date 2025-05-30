@@ -9,7 +9,7 @@ import os
 
 def generate_launch_description():
     pkg_share = get_package_share_directory('isaac_robot_description')
-    default_model_path = os.path.join(pkg_share, 'urdf', 'robot.urdf')
+    default_model_path = os.path.join(pkg_share, 'urdf', 'robot_ackermann.urdf')
     default_rviz_config_path = os.path.join(pkg_share, 'rviz', 'config.rviz')
 
     # Declare the launch arguments
