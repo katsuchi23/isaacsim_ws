@@ -11,6 +11,7 @@ def generate_launch_description():
     pkg_share = get_package_share_directory('isaac_robot_description')
     default_model_path = os.path.join(pkg_share, 'urdf', 'robot_ackermann.urdf')
     default_rviz_config_path = os.path.join(pkg_share, 'rviz', 'config.rviz')
+    use_sim_time = LaunchConfiguration('use_sim_time')
 
     # Declare the launch arguments
     model_arg = DeclareLaunchArgument(
@@ -25,9 +26,15 @@ def generate_launch_description():
     )
     gui_arg = DeclareLaunchArgument(
         'gui',
-        default_value='True',
+        default_value='false',
         description='Flag to enable joint_state_publisher_gui'
     )
+    use_sim_time_cmd = DeclareLaunchArgument(
+        'use_sim_time',
+        default_value='True',
+        description='Use simulation time for isaac sim')
+    
+    # Define the nodes
 
     robot_state_publisher_node = Node(
         package='robot_state_publisher',
@@ -52,6 +59,7 @@ def generate_launch_description():
         executable='rviz2',
         name='rviz2',
         output='screen',
+        parameters=[{'use_sim_time': use_sim_time}],
         arguments=['-d', LaunchConfiguration('rvizconfig')],
     )
 
@@ -60,6 +68,7 @@ def generate_launch_description():
     ld.add_action(model_arg)
     ld.add_action(rvizconfig_arg)
     ld.add_action(gui_arg)
+    ld.add_action(use_sim_time_cmd)
     
     ld.add_action(robot_state_publisher_node)
     ld.add_action(joint_state_publisher_node)
