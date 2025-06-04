@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 # Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
 #
@@ -24,7 +24,7 @@ class CmdvelToAckermann(Node):
         super().__init__('cmdvel_to_ackermann')
 
         self.declare_parameter('publish_period_ms', 20)
-        self.declare_parameter('track_width', 0.31)
+        self.declare_parameter('track_width', 0.24)
         self.declare_parameter('acceleration', 0.0)
         self.declare_parameter('steering_velocity', 0.0)
         
