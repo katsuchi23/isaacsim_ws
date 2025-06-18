@@ -2,81 +2,75 @@
 
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Float64MultiArray
+from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 import numpy as np
-import time
+from inverse_kinematics import inverse_kinematic  # Your IK function
 
-class JointCommandPublisher(Node):
+SEQUENCE = np.array([
+    [-0.11, -0.15, 0.05, 0.45, 0.75, 0.08],
+    [-0.11, -0.15, 0.00, 0.45, 0.75, 0.08],
+    [-0.11, -0.15, 0.00, 0.45, 0.75, 0.0],
+    [-0.11, -0.15, 0.05, 0.45, 0.75, 0.0],
+    [-0.03, -0.05, 0.05, 0.45, 0.75, 0.0],
+])
+
+class SmoothJointPublisher(Node):
     def __init__(self):
-        super().__init__('joint_command_publisher')
+        super().__init__('smooth_joint_publisher')
 
-        self.publisher = self.create_publisher(
-            Float64MultiArray,
-            '/joint_command',
-            10
-        )
+        self.publisher = self.create_publisher(JointTrajectory, '/joint_command', 10)
+        self.timer_period = 0.02  # 50 Hz
+        self.timer = self.create_timer(self.timer_period, self.timer_callback)
 
-        # Simulation setup
-        self.joint_count = 6
-        self.target_position = np.array([0.5, -0.6, 0.3, -0.1, 0.0, 0.0])
-        self.current_position = np.zeros(self.joint_count)
-        self.current_velocity = np.zeros(self.joint_count)
+        self.joint_names = [
+            'left_hip_joint', 'left_knuckle_joint', 'left_ankle_joint',
+            'right_hip_joint', 'right_knuckle_joint', 'right_ankle_joint'
+        ]
 
-        # PID gains
-        self.Kp = 100.0
-        self.Kd = 2.0
-        self.Ki = 0.0
-        self.integral_error = np.zeros(self.joint_count)
+        self.sequence = SEQUENCE
+        self.index = 0
+        self.pose_duration = 1.0  # seconds to hold each pose
+        self.last_pose_time = self.get_clock().now()
 
-        # Timing
-        self.time_step = 0.001
-        self.last_time = time.time()
+        self.current_solution = inverse_kinematic(self.sequence[self.index], max_iter=100, tol=1e-5, alpha=0.5)
 
-        # Timer for publishing at fixed rate
-        self.timer = self.create_timer(self.time_step, self.control_loop)
+    def timer_callback(self):
+        now = self.get_clock().now()
+        elapsed = (now - self.last_pose_time).nanoseconds * 1e-9
 
-        self.get_logger().info("JointCommandPublisher started.")
+        if elapsed >= self.pose_duration:
+            self.index += 1
+            if self.index >= len(self.sequence):
+                self.get_logger().info("Sequence completed.")
+                rclpy.shutdown()
+                return
 
-    def control_loop(self):
-        # Time delta
-        now = time.time()
-        dt = now - self.last_time
-        self.last_time = now
-        if dt <= 0.0:
-            dt = self.time_step  # fallback
+            self.last_pose_time = now
+            self.current_solution = inverse_kinematic(self.sequence[self.index], max_iter=100, tol=1e-5, alpha=0.5)
 
-        # Compute error terms
-        error = self.target_position - self.current_position
-        self.integral_error += error * dt
-        derivative_error = -self.current_velocity
+        if self.current_solution is None:
+            self.get_logger().warn(f"IK failed for pose index {self.index}")
+            return
 
-        # PID control
-        cmd = (
-            self.Kp * error +
-            self.Ki * self.integral_error +
-            self.Kd * derivative_error
-        )
+        msg = JointTrajectory()
+        msg.joint_names = self.joint_names
 
-        # Integrate to get simulated current position/velocity
-        self.current_velocity += cmd * dt
-        self.current_position += self.current_velocity * dt
+        point = JointTrajectoryPoint()
+        point.positions = list(self.current_solution)
+        point.time_from_start = rclpy.duration.Duration(seconds=0.0).to_msg()
 
-        # Publish command
-        msg = Float64MultiArray()
-        msg.data = cmd.tolist()
+        msg.points.append(point)
         self.publisher.publish(msg)
 
 def main(args=None):
     rclpy.init(args=args)
-    node = JointCommandPublisher()
-
+    node = SmoothJointPublisher()
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
-        node.get_logger().info('Shutting down JointCommandPublisher...')
-    finally:
-        node.destroy_node()
-        rclpy.shutdown()
+        pass
+    node.destroy_node()
+    rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

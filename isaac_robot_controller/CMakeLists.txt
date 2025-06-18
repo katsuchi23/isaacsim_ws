@@ -18,6 +18,7 @@ install(PROGRAMS
   scripts/cmdvel_to_ackermann.py
   scripts/l2_mujoco_subscriber.py
   scripts/l2_mujoco_publisher.py
+  scripts/inverse_kinematics.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
