@@ -14,10 +14,10 @@ class MujocoSimNode(Node):
         super().__init__('mujoco_sim_node')
 
         # Load MuJoCo model
-        self.model = mujoco.MjModel.from_xml_path("/home/rey/isaacsim_ws/src/mujoco_menagerie/low_cost_robot_arm/scene.xml")
+        self.model = mujoco.MjModel.from_xml_path("/home/rey/isaacsim_ws/src/mujoco_menagerie/unitree_g1/scene.xml")
         self.data = mujoco.MjData(self.model)
 
-        self.time_step = 0.001
+        self.time_step = 0.002
         self.data.ctrl[:] = np.zeros(self.model.nu)
 
         # Define joint name to index mapping

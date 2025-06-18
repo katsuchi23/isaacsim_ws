@@ -7,11 +7,11 @@ import numpy as np
 from inverse_kinematics import inverse_kinematic  # Your IK function
 
 SEQUENCE = np.array([
-    [-0.11, -0.15, 0.05, 0.45, 0.75, 0.08],
+    [-0.11, -0.15, 0.15, 0.45, 0.75, 0.08],
     [-0.11, -0.15, 0.00, 0.45, 0.75, 0.08],
     [-0.11, -0.15, 0.00, 0.45, 0.75, 0.0],
-    [-0.11, -0.15, 0.05, 0.45, 0.75, 0.0],
-    [-0.03, -0.05, 0.05, 0.45, 0.75, 0.0],
+    [-0.11, -0.15, 0.15, 0.45, 0.75, 0.0],
+    [-0.11, 0.15, 0.15, 0.45, 0.75, 0.0],
 ])
 
 class SmoothJointPublisher(Node):
@@ -29,7 +29,7 @@ class SmoothJointPublisher(Node):
 
         self.sequence = SEQUENCE
         self.index = 0
-        self.pose_duration = 1.0  # seconds to hold each pose
+        self.pose_duration = 2.0  # seconds to hold each pose
         self.last_pose_time = self.get_clock().now()
 
         self.current_solution = inverse_kinematic(self.sequence[self.index], max_iter=100, tol=1e-5, alpha=0.5)
@@ -41,7 +41,6 @@ class SmoothJointPublisher(Node):
         if elapsed >= self.pose_duration:
             self.index += 1
             if self.index >= len(self.sequence):
-                self.get_logger().info("Sequence completed.")
                 rclpy.shutdown()
                 return
 
