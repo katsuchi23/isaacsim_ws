@@ -15,7 +15,7 @@
   <worldbody>
     <light directional="true" diffuse="0.4 0.4 0.4" specular="0.1 0.1 0.1" pos="0 0 5.0" dir="0 0 -1" castshadow="false" />
     <light directional="true" diffuse="0.6 0.6 0.6" specular="0.2 0.2 0.2" pos="0 0 4" dir="0 0 -1" />
-    <geom name="ground" type="plane" pos="0 0 0" size="100 100 0.001" quat="1 0 0 0" material="matplane_blue" condim="3" conaffinity="15" />
+    <geom name="ground" type="plane" pos="0 0 0" size="100 100 0.001" quat="1 0 0 0" material="matplane_blue" condim="3" conaffinity="15" contype="1"/>
     <camera name="fixed" pos="0 -3.0 1.365" xyaxes="1 0 0 0 0 1" />
     <camera name="track" mode="trackcom" pos="0 -3.0 1.365" xyaxes="1 0 0 0 0 1" />
     <body name="root" pos="0 0 0.875" quat="1 0 0 0">
@@ -26,19 +26,19 @@
     <geom name="lidar_collision" size="0.05 0.025" pos="0 0 0.2" type="cylinder" rgba="0 0 0 1" contype="1" conaffinity="0" density="0" group="1" />
 
     <body name="left_thigh_link" pos="-0.235 0 -0.075" >
-      <inertial pos="0 0 0" mass="10" diaginertia="0.0108333 0.0108333 0.00125" />
+      <inertial pos="0 0 0" mass="1" diaginertia="0.0108333 0.0108333 0.00125" />
       <joint name="left_hip_joint" pos="0 0 0" axis="1 0 0" range="-1.57 1.57" actuatorfrcrange="-10 10" />
-      <geom name="left_thigh_collision" size="0.05 0.175" pos="0 0 -0.175" type="cylinder" contype="1" conaffinity="0" density="0" group="1" quat="0 1 0 0"/>
+      <geom name="left_thigh_collision" size="0.05 0.175" pos="0 0 -0.175" type="cylinder" contype="1" conaffinity="1" density="0" group="1" quat="0 1 0 0"/>
       
       <body name="left_leg_link" pos="0 0 -0.365">
         <inertial pos="0 0 0" mass="1" diaginertia="0.0108333 0.0108333 0.00125" />
         <joint name="left_knuckle_joint" pos="0 0 0" axis="1 0 0" range="-1.57 0" actuatorfrcrange="-10 10" />
-        <geom name="left_leg_collision" size="0.05 0.175" pos="0 0 -0.175" type="cylinder" contype="1" conaffinity="0" density="0" group="1" quat="0 1 0 0"/>
+        <geom name="left_leg_collision" size="0.05 0.175" pos="0 0 -0.175" type="cylinder" contype="1" conaffinity="1" density="0" group="1" quat="0 1 0 0"/>
         
         <body name="left_foot_link" pos="0 0 -0.375">
           <inertial pos="0 0 0" quat="0.5 0.5 -0.5 0.5" mass="0.5" diaginertia="0.00520833 0.00270833 0.00270833" />
           <joint name="left_ankle_joint" pos="0 0 0" axis="1 0 0" range="-1.57 1.57" actuatorfrcrange="-10 10" />
-          <geom name="left_foot_collision" size="0.125 0.125 0.025" pos="0 0.055 -0.025" type="box" contype="1" conaffinity="0" density="0" group="1" />
+          <geom name="left_foot_collision" size="0.125 0.125 0.025" pos="0 0.055 -0.025" type="box" contype="1" conaffinity="1" density="0" group="1" />
         </body>
       </body>
     </body>
@@ -46,17 +46,17 @@
     <body name="right_thigh_link" pos="0.235 0 -0.075">
       <inertial pos="0 0 0" mass="1" diaginertia="0.0108333 0.0108333 0.00125" />
       <joint name="right_hip_joint" pos="0 0 0" axis="1 0 0" range="-1.57 1.57" actuatorfrcrange="-10 10" />
-      <geom name="right_thigh_collision" size="0.05 0.175" pos="0 0 -0.175" type="cylinder" contype="1" conaffinity="0" density="0" group="1" quat="0 1 0 0"/>
+      <geom name="right_thigh_collision" size="0.05 0.175" pos="0 0 -0.175" type="cylinder" contype="1" conaffinity="1" density="0" group="1" quat="0 1 0 0"/>
       
       <body name="right_leg_link" pos="0 0 -0.365">
         <inertial pos="0 0 0" mass="1" diaginertia="0.0108333 0.0108333 0.00125" />
         <joint name="right_knuckle_joint" pos="0 0 0" axis="1 0 0" range="-1.57 0" actuatorfrcrange="-10 10" />
-        <geom name="right_leg_collision" size="0.05 0.175" pos="0 0 -0.175" type="cylinder" contype="1" conaffinity="0" density="0" group="1" quat="0 1 0 0"/>
+        <geom name="right_leg_collision" size="0.05 0.175" pos="0 0 -0.175" type="cylinder" contype="1" conaffinity="1" density="0" group="1" quat="0 1 0 0"/>
         
         <body name="right_foot_link" pos="0 0 -0.375">
           <inertial pos="0 0 0" quat="0.5 0.5 -0.5 0.5" mass="0.5" diaginertia="0.00520833 0.00270833 0.00270833" />
           <joint name="right_ankle_joint" pos="0 0 0" axis="1 0 0" range="-1.57 1.57" actuatorfrcrange="-10 10" />
-          <geom name="right_foot_collision" size="0.125 0.125 0.025" pos="0 0.055 -0.025" type="box" contype="1" conaffinity="0" density="0" group="1" />
+          <geom name="right_foot_collision" size="0.125 0.125 0.025" pos="0 0.055 -0.025" type="box" contype="1" conaffinity="1" density="0" group="1" />
         </body>
       </body>
     </body>
@@ -73,12 +73,12 @@
   </asset>
 
   <actuator>
-    <position name="left_hip_joint" joint="left_hip_joint" kp="100" ctrllimited="true" ctrlrange="-1.57 1.57"/>
-    <position name="left_knuckle_joint" joint="left_knuckle_joint" kp="100" ctrllimited="true" ctrlrange="-1.57 0"/>
-    <position name="left_ankle_joint" joint="left_ankle_joint" kp="100" ctrllimited="true" ctrlrange="-1.57 1.57"/>
-    <position name="right_hip_joint" joint="right_hip_joint" kp="100" ctrllimited="true" ctrlrange="-1.57 1.57"/>
-    <position name="right_knuckle_joint" joint="right_knuckle_joint" kp="100" ctrllimited="true" ctrlrange="-1.57 0"/>
-    <position name="right_ankle_joint" joint="right_ankle_joint" kp="100" ctrllimited="true" ctrlrange="-1.57 1.57"/>
+    <motor name="left_hip_joint" joint="left_hip_joint" ctrllimited="true" ctrlrange="-100 100"/>
+    <motor name="left_knuckle_joint" joint="left_knuckle_joint" ctrllimited="true" ctrlrange="-100 0"/>
+    <motor name="left_ankle_joint" joint="left_ankle_joint" ctrllimited="true" ctrlrange="-100 1.57"/>
+    <motor name="right_hip_joint" joint="right_hip_joint" ctrllimited="true" ctrlrange="-100 100"/>
+    <motor name="right_knuckle_joint" joint="right_knuckle_joint" ctrllimited="true" ctrlrange="-100 0"/>
+    <motor name="right_ankle_joint" joint="right_ankle_joint" ctrllimited="true" ctrlrange="-100 1.57"/>
   </actuator>
 
 

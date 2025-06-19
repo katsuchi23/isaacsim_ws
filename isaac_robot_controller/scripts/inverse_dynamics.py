@@ -1,23 +1,36 @@
-import pinocchio as pin
+import mujoco
 import numpy as np
+from inverse_kinematics import inverse_kinematic  # Your IK function
 
-model = pin.buildModelFromUrdf("/home/delta/isaacsim_ws/src/isaac_robot_description/urdf/l2_clean.urdf")
-data = model.createData()
-print(model)
-print("-------------------------------------------------")
-print(data)
+# Load your MJCF model
+model = mujoco.MjModel.from_xml_path("/home/rey/isaacsim_ws/src/isaac_robot_description/urdf/l2.xml")
+data = mujoco.MjData(model)
+print(model.nq, model.nv)
 
-squat_pose = np.array([
-    -0.8,  # left_hip_joint
-    -1.0,   # left_knee_joint (knuckle)
-    -0.6,  # left_ankle_joint
-    -0.8,  # right_hip_joint
-    -1.0,   # right_knee_joint
-    -0.6,  # right_ankle_joint
-])
-q = np.array([0, 0, 1.0, 0, 0, 0, 1] + list(squat_pose))  # joint positions
-v = np.zeros(model.nv)  # joint velocities
-a = np.zeros(model.nv)  # joint accelerations
+# Set joint position (qpos), velocity (qvel), and acceleration (qacc)
+# Example: squat_pose analog for your robot arm — customize this
+SEQUENCE = np.array([-0.11, -0.15, 0.0, 0.45, 0.75, 0.08])
+arm_pose = inverse_kinematic(
+    SEQUENCE, 
+    initial_guess=None, 
+    max_iter=100, 
+    tol=1e-5, 
+    alpha=0.5,
+    lower_limits=None,
+    upper_limits=None
+)
+print("Inverse Kinematic Solution:", arm_pose)
 
-tau = pin.rnea(model, data, q, v, a)
-print("Joint torques for squat pose:", tau)
+qvel = np.zeros(model.nv)
+qacc = np.zeros(model.nv)
+
+# Assign to MuJoCo data
+data.qpos[:len(arm_pose)] = arm_pose
+data.qvel[:] = qvel
+data.qacc[:] = qacc
+
+# Run inverse dynamics
+mujoco.mj_inverse(model, data)
+
+# Print result
+print("Joint torques:", data.qfrc_inverse)

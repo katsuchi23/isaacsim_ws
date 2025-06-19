@@ -19,6 +19,7 @@ install(PROGRAMS
   scripts/l2_mujoco_subscriber.py
   scripts/l2_mujoco_publisher.py
   scripts/inverse_kinematics.py
+  scripts/inverse_dynamics.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

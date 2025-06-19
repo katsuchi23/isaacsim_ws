@@ -14,7 +14,7 @@ class MujocoSimNode(Node):
         super().__init__('mujoco_sim_node')
 
         # Load MuJoCo model
-        self.model = mujoco.MjModel.from_xml_path("/home/delta/isaacsim_ws/src/isaac_robot_description/urdf/l2.xml")
+        self.model = mujoco.MjModel.from_xml_path("/home/rey/isaacsim_ws/src/isaac_robot_description/urdf/l2.xml")
         self.data = mujoco.MjData(self.model)
 
         self.time_step = 0.001
