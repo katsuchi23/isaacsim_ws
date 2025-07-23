@@ -176,3 +176,4 @@ cython_debug/
 
 # mujoco files
 mujoco_menagerie/
+unitree_mujoco/

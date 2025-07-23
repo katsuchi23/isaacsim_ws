@@ -2,7 +2,7 @@
 
 import rclpy
 from rclpy.node import Node
-from sensor_msgs.msg import JointState
+from trajectory_msgs.msg import JointTrajectory
 
 import mujoco
 import mujoco.viewer
@@ -14,10 +14,10 @@ class MujocoSimNode(Node):
         super().__init__('mujoco_sim_node')
 
         # Load MuJoCo model
-        self.model = mujoco.MjModel.from_xml_path("/home/rey/isaacsim_ws/src/isaac_robot_description/urdf/l2.xml")
+        self.model = mujoco.MjModel.from_xml_path("/home/rey/isaacsim_ws/src/mujoco_menagerie/low_cost_robot_arm/scene.xml")
         self.data = mujoco.MjData(self.model)
 
-        self.time_step = 0.001
+        self.time_step = 0.005
         self.data.ctrl[:] = np.zeros(self.model.nu)
 
         # Define joint name to index mapping
@@ -32,32 +32,40 @@ class MujocoSimNode(Node):
 
         # Subscribe to JointTrajectory
         self.subscription = self.create_subscription(
-            JointState,
+            JointTrajectory,
             '/joint_command',
-            self.joint_state_callback,
+            self.trajectory_callback,
             10
         )
 
         # Start the viewer
         self.viewer = mujoco.viewer.launch_passive(self.model, self.data)
         self.viewer.sync()
-        self.get_logger().info("MuJoCo simulation started with JointState interface.")
+        self.get_logger().info("MuJoCo simulation started with JointCommand interface.")
 
         # Timer for stepping
         self.timer = self.create_timer(self.time_step, self.simulation_step)
 
-    def joint_state_callback(self, msg: JointState):
-        if not msg:
-            self.get_logger().warn("Received empty joint state message.")
+    def trajectory_callback(self, msg: JointTrajectory):
+        if not msg.points:
+            self.get_logger().warn("Received empty trajectory message.")
+            return
+
+        point = msg.points[0]
+        positions = point.positions
+
+        if len(msg.joint_names) != len(positions):
+            self.get_logger().warn("Mismatch between joint names and positions.")
             return
 
         ctrl = np.zeros(self.model.nu)
-        for joint_name, effort in zip(msg.name, msg.effort):
+        for joint_name, position in zip(msg.joint_names, positions):
             if joint_name not in self.joint_name_to_index:
                 self.get_logger().warn(f"Unknown joint name: {joint_name}")
                 continue
             idx = self.joint_name_to_index[joint_name]
-            ctrl[idx] = effort
+            ctrl[idx] = position
+
         self.data.ctrl[:] = ctrl
 
     def simulation_step(self):
